@@ -11,15 +11,15 @@ public class ConwaySimulation : MonoBehaviour
     {
         public int seed;
         public int spawnProbability;
+        public int width;
+        public int height;
+        public int depth;
     }
 
     [Serializable]
     public struct DynamicConfiguration
     {
         public float cellSize;
-        public int width;
-        public int height;
-        public int depth;
         public float spacing;
         public int minPopulationCutoff;
         public int maxPopulationThreshold;
@@ -52,9 +52,9 @@ public class ConwaySimulation : MonoBehaviour
 
         UnityEngine.Random.InitState(m_staticConfiguration.seed);
 
-        width = m_dynamicConfiguration.width;
-        height = m_dynamicConfiguration.height;
-        depth = m_dynamicConfiguration.depth;
+        width = m_staticConfiguration.width;
+        height = m_staticConfiguration.height;
+        depth = m_staticConfiguration.depth;
         maxCount = width * height * depth;
         m_states = new NativeArray<int>(maxCount, Allocator.Persistent);
         m_statesCopy = new NativeArray<int>(maxCount, Allocator.Persistent);
@@ -107,9 +107,9 @@ public class ConwaySimulation : MonoBehaviour
 
         var conJob = new ConJob
         {
-            width = m_dynamicConfiguration.width,
-            height = m_dynamicConfiguration.height,
-            depth = m_dynamicConfiguration.depth,
+            width = m_staticConfiguration.width,
+            height = m_staticConfiguration.height,
+            depth = m_staticConfiguration.depth,
             minPopulationCutoff = m_dynamicConfiguration.minPopulationCutoff,
             maxPopulationThreshold = m_dynamicConfiguration.maxPopulationThreshold,
             states = m_states,

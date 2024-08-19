@@ -13,14 +13,14 @@ public class ConwaySimulationConfigHolder : MonoBehaviour
         Instance.staticConfiguration = new ConwaySimulation.StaticConfiguration
         {
             seed = 0,
-            spawnProbability = 8
+            spawnProbability = 8,
+            width = 128,
+            height = 128,
+            depth = 1,
         };
         Instance.dynamicConfiguration = new ConwaySimulation.DynamicConfiguration
         {
             cellSize = 1.0f,
-            width = 128,
-            height = 128,
-            depth = 1,
             spacing = 0.1f,
             minPopulationCutoff = 2,
             maxPopulationThreshold = 3,
@@ -52,19 +52,19 @@ public class ConwaySimulationConfigHolder : MonoBehaviour
         // Width
         GUILayout.BeginHorizontal();
         GUILayout.Label("Width:");
-        dynamicConfiguration.width = int.Parse(GUILayout.TextField(dynamicConfiguration.width.ToString()));
+        staticConfiguration.width = int.Parse(GUILayout.TextField(staticConfiguration.width.ToString()));
         GUILayout.EndHorizontal();
 
         // Height
         GUILayout.BeginHorizontal();
         GUILayout.Label("Height:");
-        dynamicConfiguration.height = int.Parse(GUILayout.TextField(dynamicConfiguration.height.ToString()));
+        staticConfiguration.height = int.Parse(GUILayout.TextField(staticConfiguration.height.ToString()));
         GUILayout.EndHorizontal();
 
         // Depth
         GUILayout.BeginHorizontal();
         GUILayout.Label("Depth:");
-        dynamicConfiguration.depth = int.Parse(GUILayout.TextField(dynamicConfiguration.depth.ToString()));
+        staticConfiguration.depth = int.Parse(GUILayout.TextField(staticConfiguration.depth.ToString()));
         GUILayout.EndHorizontal();
 
         // Spacing
