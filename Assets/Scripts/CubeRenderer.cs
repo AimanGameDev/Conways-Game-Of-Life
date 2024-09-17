@@ -46,6 +46,9 @@ public class CubeRenderer : MonoBehaviour
 
     private void Update()
     {
+        if (!conwaySimulation.canRender)
+            return;
+
         if (conwaySimulation.stages == ConwaySimulation.Stages.CompleteConJob)
         {
             m_statesBuffer.SetData(conwaySimulation.states);

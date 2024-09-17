@@ -14,9 +14,9 @@ public class ConwaySimulationConfigHolder : MonoBehaviour
         {
             seed = 0,
             spawnProbability = 8,
-            width = 64,
-            height = 64,
-            depth = 64
+            width = 128,
+            height = 128,
+            depth = 1
         };
         Instance.dynamicConfiguration = new ConwaySimulation.DynamicConfiguration
         {
@@ -25,7 +25,8 @@ public class ConwaySimulationConfigHolder : MonoBehaviour
             minPopulationCutoff = 2,
             maxPopulationThreshold = 3,
             simulationTickRate = 0.015f,
-            adjanceLiveCellCountForRevival = 3
+            adjanceLiveCellCountForRevival = 3,
+            canRender = true
         };
     }
 

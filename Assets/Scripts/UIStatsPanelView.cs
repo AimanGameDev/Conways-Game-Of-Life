@@ -12,19 +12,23 @@ public class UIStatsPanelView : MonoBehaviour
 
     void Update()
     {
-        var fps = 1 / Time.deltaTime;
         var maxCount = conwaySimulation.maxCount;
         var generation = conwaySimulation.generationCount;
         var aliveCells = conwaySimulation.aliveCellsCount;
 
-        var fpsText = $"FPS: {(int)fps}";
-        var maxCountText = $"Max Count: {maxCount:N0}";
-        var generationText = $"Generation: {generation:N0}";
-        var aliveCellsText = $"Alive Cells: {aliveCells:N0}";
+        var maxCountText = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Max Count: {0:N0}", maxCount);
+        var generationText = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Generation: {0:N0}", generation);
+        var aliveCellsText = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Alive Cells: {0:N0}", aliveCells);
 
-        fpsLabel.SetText(fpsText);
         maxCountLabel.SetText(maxCountText);
         generationLabel.SetText(generationText);
         aliveCellsLabel.SetText(aliveCellsText);
+
+        if (Time.frameCount % 10 == 0)
+        {
+            var fps = 1 / Time.deltaTime;
+            var fpsText = $"FPS: {(int)fps}";
+            fpsLabel.SetText(fpsText);
+        }
     }
 }

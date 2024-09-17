@@ -21,6 +21,7 @@ public class ConwaySimulation : MonoBehaviour
     [Serializable]
     public struct DynamicConfiguration
     {
+        public bool canRender;
         public float cellSize;
         public float spacing;
         public float simulationTickRate;
@@ -51,6 +52,7 @@ public class ConwaySimulation : MonoBehaviour
     public NativeArray<int> states => m_statesCopy;
     public float cellSize => m_dynamicConfiguration.cellSize;
     public Stages stages => m_stages;
+    public bool canRender => m_dynamicConfiguration.canRender;
 
     private DynamicConfiguration m_dynamicConfiguration => ConwaySimulationConfigHolder.Instance.dynamicConfiguration;
     private StaticConfiguration m_staticConfiguration;

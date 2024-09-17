@@ -36,6 +36,7 @@ public class UIConfigPanelView : MonoBehaviour
     public ConwaySimulationConfigHolder configHolder;
 
     public Button collapseButton;
+    public TextMeshProUGUI collapseButtonLabel;
     public GameObject content;
 
     public Button restartSceneButton;
@@ -48,6 +49,7 @@ public class UIConfigPanelView : MonoBehaviour
     public IntSettingConfiguration depthSettingConfiguration;
 
     [Header("Dynamic Settings")]
+    public Toggle renderToggle;
     public FloatSettingConfiguration cellSizeSettingConfiguration;
     public FloatSettingConfiguration spacingSettingConfiguration;
     public FloatSettingConfiguration simulationTickRateSettingConfiguration;
@@ -72,14 +74,23 @@ public class UIConfigPanelView : MonoBehaviour
     {
         configHolder = FindObjectOfType<ConwaySimulationConfigHolder>();
 
+        collapseButtonLabel.SetText(content.activeSelf ? "▼" : "▲");
         collapseButton.onClick.AddListener(() =>
         {
-            content.SetActive(!content.activeSelf);
+            var result = !content.activeSelf;
+            collapseButtonLabel.SetText(result ? "▼" : "▲");
+            content.SetActive(result);
         });
 
         restartSceneButton.onClick.AddListener(() =>
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        });
+
+        renderToggle.isOn = configHolder.dynamicConfiguration.canRender;
+        renderToggle.onValueChanged.AddListener((value) =>
+        {
+            configHolder.dynamicConfiguration.canRender = value;
         });
 
         InitializeSetting(seedSetting.settingReferences, seedSettingConfiguration);
@@ -116,7 +127,7 @@ public class UIConfigPanelView : MonoBehaviour
         spacingSetting.settingReferences.value.SetText($"{configHolder.dynamicConfiguration.spacing:N2} {spacingSettingConfiguration.valueSuffix}");
 
         simulationTickRateSetting.settingReferences.slider.SetValueWithoutNotify(configHolder.dynamicConfiguration.simulationTickRate);
-        simulationTickRateSetting.settingReferences.value.SetText($"{configHolder.dynamicConfiguration.simulationTickRate:N2} {simulationTickRateSettingConfiguration.valueSuffix}");
+        simulationTickRateSetting.settingReferences.value.SetText($"{configHolder.dynamicConfiguration.simulationTickRate:N3} {simulationTickRateSettingConfiguration.valueSuffix}");
 
         minPopulationCutoffSetting.settingReferences.slider.SetValueWithoutNotify(configHolder.dynamicConfiguration.minPopulationCutoff);
         minPopulationCutoffSetting.settingReferences.value.SetText($"{configHolder.dynamicConfiguration.minPopulationCutoff:N0} {minPopulationCutoffSettingConfiguration.valueSuffix}");
@@ -150,10 +161,10 @@ public class UIConfigPanelView : MonoBehaviour
         setting.slider.maxValue = configuration.maxValue;
         setting.slider.wholeNumbers = false;
         setting.slider.SetValueWithoutNotify(configuration.defaultValue);
-        setting.value.SetText($"{configuration.defaultValue:N2} {configuration.valueSuffix}");
+        setting.value.SetText($"{configuration.defaultValue:N3} {configuration.valueSuffix}");
         setting.slider.onValueChanged.AddListener((value) =>
         {
-            setting.value.SetText($"{value:N2} {configuration.valueSuffix}");
+            setting.value.SetText($"{value:N3} {configuration.valueSuffix}");
             ApplyConfigs();
         });
     }
