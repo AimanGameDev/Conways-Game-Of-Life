@@ -29,6 +29,16 @@ public class ConwaySimulation : MonoBehaviour
         public int adjanceLiveCellCountForRevival;
     }
 
+    public enum Stages
+    {
+        Idle,
+        CompleteConJob,
+        CompleteSumJob,
+        ExecuteCopyJob,
+        ScheduleConJob,
+        ScheduleSumJob,
+    }
+
     public int width { get; private set; }
     public int height { get; private set; }
     public int depth { get; private set; }
@@ -40,6 +50,7 @@ public class ConwaySimulation : MonoBehaviour
     public float spacing => m_dynamicConfiguration.spacing;
     public NativeArray<int> states => m_statesCopy;
     public float cellSize => m_dynamicConfiguration.cellSize;
+    public Stages stages => m_stages;
 
     private DynamicConfiguration m_dynamicConfiguration => ConwaySimulationConfigHolder.Instance.dynamicConfiguration;
     private StaticConfiguration m_staticConfiguration;
@@ -48,7 +59,9 @@ public class ConwaySimulation : MonoBehaviour
     private NativeArray<int>[] m_sums;
     private NativeArray<JobHandle> m_sumJobs;
     private JobHandle m_conJobHandle;
+    private JobHandle m_copyJobHandle;
     private float m_simulationTime;
+    private Stages m_stages;
 
     private void Awake()
     {
@@ -79,18 +92,48 @@ public class ConwaySimulation : MonoBehaviour
         }
 
         UpdateBounds();
+
+        m_stages = Stages.Idle;
     }
 
     private void Update()
     {
         m_simulationTime += Time.deltaTime;
-        if (m_simulationTime >= m_dynamicConfiguration.simulationTickRate)
+        switch (m_stages)
         {
-            m_simulationTime = 0;
-            ExecuteJobs(); //TODO defer
+            case Stages.Idle:
+                if (m_simulationTime >= m_dynamicConfiguration.simulationTickRate)
+                {
+                    m_simulationTime = 0;
+                    m_stages = Stages.CompleteConJob;
+                }
+                break;
+            case Stages.CompleteConJob:
+                m_conJobHandle.Complete();
+                m_stages = Stages.CompleteSumJob;
+                break;
+            case Stages.CompleteSumJob:
+                CompleteSumJob();
+                m_stages = Stages.ExecuteCopyJob;
+                break;
+            case Stages.ExecuteCopyJob:
+                ExecuteCopyJob();
+                m_stages = Stages.ScheduleConJob;
+                break;
+            case Stages.ScheduleConJob:
+                ScheduleConJob();
+                m_stages = Stages.ScheduleSumJob;
+                break;
+            case Stages.ScheduleSumJob:
+                ScheduleSumJob();
+                m_stages = Stages.Idle;
+                break;
         }
 
         UpdateBounds();
+
+        UnityEngine.Profiling.Profiler.BeginSample("ConwaySimulation :: " + m_stages);
+        UnityEngine.Profiling.Profiler.EndSample();
     }
 
     private void UpdateBounds()
@@ -101,33 +144,8 @@ public class ConwaySimulation : MonoBehaviour
         center = boundsSize / 2;
     }
 
-    private void ExecuteJobs()
+    private void ScheduleConJob()
     {
-        m_conJobHandle.Complete(); //Complete previous Job
-
-        m_states.CopyTo(m_statesCopy);
-
-        var sumsCount = m_sums.Length;
-        for (var i = 0; i < sumsCount; i++)
-        {
-            var slice = new NativeSlice<int>(m_statesCopy, i * m_staticConfiguration.sumRange, m_staticConfiguration.sumRange);
-            var sumJob = new SumJob
-            {
-                states = slice,
-                sums = m_sums[i],
-            };
-            m_sumJobs[i] = sumJob.Schedule(m_sums[i].Length, 64);
-        }
-
-        JobHandle.CompleteAll(m_sumJobs);
-
-        var aliveCellsCountTemp = 0;
-        for (var i = 0; i < m_sums.Length; i++)
-        {
-            aliveCellsCountTemp += m_sums[i][0];
-        }
-        aliveCellsCount = aliveCellsCountTemp;
-
         var conJob = new ConJob
         {
             width = m_staticConfiguration.width,
@@ -143,9 +161,50 @@ public class ConwaySimulation : MonoBehaviour
         generationCount++;
     }
 
+    private void ScheduleSumJob()
+    {
+        var sumsCount = m_sums.Length;
+        for (var i = 0; i < sumsCount; i++)
+        {
+            var slice = new NativeSlice<int>(m_statesCopy, i * m_staticConfiguration.sumRange, m_staticConfiguration.sumRange);
+            var sumJob = new SumJob
+            {
+                states = slice,
+                sums = m_sums[i],
+            };
+            m_sumJobs[i] = sumJob.Schedule(m_sums[i].Length, 64);
+        }
+    }
+
+    private void CompleteSumJob()
+    {
+        JobHandle.CompleteAll(m_sumJobs);
+
+        var aliveCellsCountTemp = 0;
+        for (var i = 0; i < m_sums.Length; i++)
+        {
+            aliveCellsCountTemp += m_sums[i][0];
+        }
+        aliveCellsCount = aliveCellsCountTemp;
+    }
+
+    private void ExecuteCopyJob()
+    {
+        var copyJob = new CopyJob
+        {
+            states = m_states,
+            statesCopy = m_statesCopy
+        };
+        m_copyJobHandle = copyJob.Schedule(maxCount, 64);
+
+        m_copyJobHandle.Complete();
+    }
+
     private void OnDestroy()
     {
         m_conJobHandle.Complete();
+        JobHandle.CompleteAll(m_sumJobs);
+        m_copyJobHandle.Complete();
 
         m_states.Dispose();
         m_statesCopy.Dispose();
@@ -154,6 +213,19 @@ public class ConwaySimulation : MonoBehaviour
         for (var i = 0; i < m_sums.Length; i++)
         {
             m_sums[i].Dispose();
+        }
+    }
+
+    [BurstCompile]
+    public struct CopyJob : IJobParallelFor
+    {
+        [ReadOnly]
+        public NativeArray<int> states;
+        public NativeArray<int> statesCopy;
+
+        public void Execute(int index)
+        {
+            statesCopy[index] = states[index];
         }
     }
 

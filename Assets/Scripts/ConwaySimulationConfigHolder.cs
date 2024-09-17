@@ -14,10 +14,10 @@ public class ConwaySimulationConfigHolder : MonoBehaviour
         {
             seed = 0,
             spawnProbability = 8,
-            width = 128,
-            height = 128,
-            depth = 128,
-            sumRange = 256,
+            width = 256,
+            height = 256,
+            depth = 256,
+            sumRange = 256 * 256,
         };
         Instance.dynamicConfiguration = new ConwaySimulation.DynamicConfiguration
         {
