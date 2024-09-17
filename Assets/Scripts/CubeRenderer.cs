@@ -46,8 +46,11 @@ public class CubeRenderer : MonoBehaviour
 
     private void Update()
     {
-        m_statesBuffer.SetData(conwaySimulation.states);
-        m_renderParams.matProps.SetBuffer(MaterialPropertiesInfo.STATES, m_statesBuffer);
+        if (conwaySimulation.stages == ConwaySimulation.Stages.CompleteConJob)
+        {
+            m_statesBuffer.SetData(conwaySimulation.states);
+            m_renderParams.matProps.SetBuffer(MaterialPropertiesInfo.STATES, m_statesBuffer);
+        }
 
         Graphics.RenderMeshIndirect(m_renderParams, mesh, m_commandBuf, COMMAND_COUNT);
     }

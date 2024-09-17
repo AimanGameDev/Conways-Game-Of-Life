@@ -82,6 +82,7 @@ public class ConwaySimulation : MonoBehaviour
             m_statesCopy[index] = m_states[index];
         }
 
+        m_staticConfiguration.sumRange = maxCount; //TODO: From test observations, this is the best value for sumRange, ie 1 job for entire sum operation.
         var sumJobCount = maxCount / m_staticConfiguration.sumRange;
         sumJobCount = sumJobCount <= 0 ? 1 : sumJobCount;
         m_sumJobs = new NativeArray<JobHandle>(sumJobCount, Allocator.Persistent);
