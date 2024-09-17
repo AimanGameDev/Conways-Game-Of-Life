@@ -10,6 +10,9 @@ public class UIStatsPanelView : MonoBehaviour
     public TextMeshProUGUI generationLabel;
     public TextMeshProUGUI aliveCellsLabel;
 
+    private float m_frameTime;
+    private float m_frameCaptureRate = 10;
+
     void Update()
     {
         var maxCount = conwaySimulation.maxCount;
@@ -24,11 +27,13 @@ public class UIStatsPanelView : MonoBehaviour
         generationLabel.SetText(generationText);
         aliveCellsLabel.SetText(aliveCellsText);
 
-        if (Time.frameCount % 10 == 0)
+        m_frameTime += 1f / Time.deltaTime;
+        if (Time.frameCount % m_frameCaptureRate == 0)
         {
-            var fps = 1 / Time.deltaTime;
+            var fps = m_frameTime / m_frameCaptureRate;
             var fpsText = $"FPS: {(int)fps}";
             fpsLabel.SetText(fpsText);
+            m_frameTime = 0;
         }
     }
 }

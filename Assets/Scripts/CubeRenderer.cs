@@ -49,7 +49,7 @@ public class CubeRenderer : MonoBehaviour
         if (!conwaySimulation.canRender)
             return;
 
-        if (conwaySimulation.stages == ConwaySimulation.Stages.CompleteConJob)
+        if (conwaySimulation.markViewDirty)
         {
             m_statesBuffer.SetData(conwaySimulation.states);
             m_renderParams.matProps.SetBuffer(MaterialPropertiesInfo.STATES, m_statesBuffer);

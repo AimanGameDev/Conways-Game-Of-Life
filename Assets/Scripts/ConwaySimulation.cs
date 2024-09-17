@@ -16,6 +16,7 @@ public class ConwaySimulation : MonoBehaviour
         public int height;
         public int depth;
         public int sumRange;
+        public bool deferredUpdate;
     }
 
     [Serializable]
@@ -53,6 +54,7 @@ public class ConwaySimulation : MonoBehaviour
     public float cellSize => m_dynamicConfiguration.cellSize;
     public Stages stages => m_stages;
     public bool canRender => m_dynamicConfiguration.canRender;
+    public bool markViewDirty => m_markViewDirty;
 
     private DynamicConfiguration m_dynamicConfiguration => ConwaySimulationConfigHolder.Instance.dynamicConfiguration;
     private StaticConfiguration m_staticConfiguration;
@@ -64,6 +66,7 @@ public class ConwaySimulation : MonoBehaviour
     private JobHandle m_copyJobHandle;
     private float m_simulationTime;
     private Stages m_stages;
+    private bool m_markViewDirty;
 
     private void Awake()
     {
@@ -102,6 +105,39 @@ public class ConwaySimulation : MonoBehaviour
     private void Update()
     {
         m_simulationTime += Time.deltaTime;
+
+        if (m_staticConfiguration.deferredUpdate)
+        {
+            UpdateDeferred();
+        }
+        else
+        {
+            UpdateImmediate();
+        }
+
+        UpdateBounds();
+    }
+
+    private void UpdateImmediate()
+    {
+        m_markViewDirty = false;
+        if (m_simulationTime >= m_dynamicConfiguration.simulationTickRate)
+        {
+            m_simulationTime = 0;
+
+            m_conJobHandle.Complete();
+            CompleteSumJob();
+            ExecuteCopyJob();
+            ScheduleConJob();
+            ScheduleSumJob();
+
+            m_markViewDirty = true;
+        }
+    }
+
+    private void UpdateDeferred()
+    {
+        m_markViewDirty = false;
         switch (m_stages)
         {
             case Stages.Idle:
@@ -113,6 +149,7 @@ public class ConwaySimulation : MonoBehaviour
                 break;
             case Stages.CompleteConJob:
                 m_conJobHandle.Complete();
+                m_markViewDirty = true;
                 m_stages = Stages.CompleteSumJob;
                 break;
             case Stages.CompleteSumJob:
@@ -132,11 +169,6 @@ public class ConwaySimulation : MonoBehaviour
                 m_stages = Stages.Idle;
                 break;
         }
-
-        UpdateBounds();
-
-        UnityEngine.Profiling.Profiler.BeginSample("ConwaySimulation :: " + m_stages);
-        UnityEngine.Profiling.Profiler.EndSample();
     }
 
     private void UpdateBounds()

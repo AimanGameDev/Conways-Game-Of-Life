@@ -42,6 +42,7 @@ public class UIConfigPanelView : MonoBehaviour
     public Button restartSceneButton;
 
     [Header("Static Settings")]
+    public Toggle deferredTicksToggle;
     public IntSettingConfiguration seedSettingConfiguration;
     public IntSettingConfiguration spawnProbabilitySettingConfiguration;
     public IntSettingConfiguration widthSettingConfiguration;
@@ -85,6 +86,12 @@ public class UIConfigPanelView : MonoBehaviour
         restartSceneButton.onClick.AddListener(() =>
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        });
+
+        deferredTicksToggle.isOn = configHolder.staticConfiguration.deferredUpdate;
+        deferredTicksToggle.onValueChanged.AddListener((value) =>
+        {
+            configHolder.staticConfiguration.deferredUpdate = value;
         });
 
         renderToggle.isOn = configHolder.dynamicConfiguration.canRender;
