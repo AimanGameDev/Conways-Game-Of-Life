@@ -2,6 +2,7 @@ using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class ConwaySimulation : MonoBehaviour
@@ -195,39 +196,13 @@ public class ConwaySimulation : MonoBehaviour
                 }
             }
 
-            if (states[index] == 0)
-            {
-                var canSpawn = validAndAliveAdjacentIndicesCount == reproductionStateCount;
-                if (canSpawn)
-                {
-                    states[index] = 1;
-                }
-            }
-            else
-            {
-                var canDie = validAndAliveAdjacentIndicesCount < minPopulationCutoff || validAndAliveAdjacentIndicesCount > maxPopulationThreshold;
-                if (canDie)
-                {
-                    states[index] = 0;
-                }
-            }
-        }
-    }
+            var canSpawn = validAndAliveAdjacentIndicesCount == reproductionStateCount;
+            var canDie = validAndAliveAdjacentIndicesCount < minPopulationCutoff || validAndAliveAdjacentIndicesCount > maxPopulationThreshold;
 
-    [BurstCompile]
-    public struct PresentationJob : IJobParallelFor
-    {
-        [ReadOnly]
-        public float size;
-        [ReadOnly]
-        public NativeArray<int> states;
-        [ReadOnly]
-        public NativeArray<Vector3> positions;
-        public NativeArray<Matrix4x4> matrices;
-
-        public void Execute(int index)
-        {
-            matrices[index] = Matrix4x4.TRS(positions[index], Quaternion.identity, states[index] == 1 ? new Vector3(size, size, size) : Vector3.zero);
+            var currentStateValue = states[index];
+            var isCurrentlyAlive = currentStateValue == 1;
+            var canLive = (!isCurrentlyAlive && canSpawn) || (isCurrentlyAlive && !canDie);
+            states[index] = math.select(0, 1, canLive);
         }
     }
 }
