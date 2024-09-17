@@ -16,7 +16,8 @@ public class ConwaySimulationConfigHolder : MonoBehaviour
             spawnProbability = 8,
             width = 128,
             height = 128,
-            depth = 1,
+            depth = 128,
+            sumRange = 256,
         };
         Instance.dynamicConfiguration = new ConwaySimulation.DynamicConfiguration
         {
@@ -65,6 +66,13 @@ public class ConwaySimulationConfigHolder : MonoBehaviour
         GUILayout.BeginHorizontal();
         GUILayout.Label("Depth:");
         staticConfiguration.depth = int.Parse(GUILayout.TextField(staticConfiguration.depth.ToString()));
+        GUILayout.EndHorizontal();
+
+
+        // SumRange
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Sum Range:");
+        staticConfiguration.sumRange = int.Parse(GUILayout.TextField(staticConfiguration.sumRange.ToString()));
         GUILayout.EndHorizontal();
 
         // Spacing

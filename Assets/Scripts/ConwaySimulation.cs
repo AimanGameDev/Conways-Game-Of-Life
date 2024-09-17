@@ -15,6 +15,7 @@ public class ConwaySimulation : MonoBehaviour
         public int width;
         public int height;
         public int depth;
+        public int sumRange;
     }
 
     [Serializable]
@@ -44,6 +45,8 @@ public class ConwaySimulation : MonoBehaviour
     private StaticConfiguration m_staticConfiguration;
     private NativeArray<int> m_states;
     private NativeArray<int> m_statesCopy;
+    private NativeArray<int>[] m_sums;
+    private NativeArray<JobHandle> m_sumJobs;
     private JobHandle m_conJobHandle;
     private float m_simulationTime;
 
@@ -66,6 +69,15 @@ public class ConwaySimulation : MonoBehaviour
             m_statesCopy[index] = m_states[index];
         }
 
+        var sumJobCount = maxCount / m_staticConfiguration.sumRange;
+        sumJobCount = sumJobCount <= 0 ? 1 : sumJobCount;
+        m_sumJobs = new NativeArray<JobHandle>(sumJobCount, Allocator.Persistent);
+        m_sums = new NativeArray<int>[sumJobCount];
+        for (var i = 0; i < sumJobCount; i++)
+        {
+            m_sums[i] = new NativeArray<int>(1, Allocator.Persistent);
+        }
+
         UpdateBounds();
     }
 
@@ -75,7 +87,7 @@ public class ConwaySimulation : MonoBehaviour
         if (m_simulationTime >= m_dynamicConfiguration.simulationTickRate)
         {
             m_simulationTime = 0;
-            ExecuteJobs();
+            ExecuteJobs(); //TODO defer
         }
 
         UpdateBounds();
@@ -93,14 +105,28 @@ public class ConwaySimulation : MonoBehaviour
     {
         m_conJobHandle.Complete(); //Complete previous Job
 
-        var aliveCellsCountTemp = 0;
-        for (var i = 0; i < m_statesCopy.Length; i++)
+        m_states.CopyTo(m_statesCopy);
+
+        var sumsCount = m_sums.Length;
+        for (var i = 0; i < sumsCount; i++)
         {
-            aliveCellsCountTemp += m_statesCopy[i];
+            var slice = new NativeSlice<int>(m_statesCopy, i * m_staticConfiguration.sumRange, m_staticConfiguration.sumRange);
+            var sumJob = new SumJob
+            {
+                states = slice,
+                sums = m_sums[i],
+            };
+            m_sumJobs[i] = sumJob.Schedule(m_sums[i].Length, 64);
+        }
+
+        JobHandle.CompleteAll(m_sumJobs);
+
+        var aliveCellsCountTemp = 0;
+        for (var i = 0; i < m_sums.Length; i++)
+        {
+            aliveCellsCountTemp += m_sums[i][0];
         }
         aliveCellsCount = aliveCellsCountTemp;
-
-        m_states.CopyTo(m_statesCopy);
 
         var conJob = new ConJob
         {
@@ -123,6 +149,30 @@ public class ConwaySimulation : MonoBehaviour
 
         m_states.Dispose();
         m_statesCopy.Dispose();
+        m_sumJobs.Dispose();
+
+        for (var i = 0; i < m_sums.Length; i++)
+        {
+            m_sums[i].Dispose();
+        }
+    }
+
+    [BurstCompile]
+    public struct SumJob : IJobParallelFor
+    {
+        [ReadOnly]
+        public NativeSlice<int> states;
+        public NativeArray<int> sums;
+
+        public void Execute(int index)
+        {
+            int sum = 0;
+            for (int i = 0; i < states.Length; i++)
+            {
+                sum += states[i];
+            }
+            sums[index] = sum;
+        }
     }
 
     [BurstCompile]
