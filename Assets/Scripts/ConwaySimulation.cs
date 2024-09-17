@@ -22,9 +22,9 @@ public class ConwaySimulation : MonoBehaviour
     {
         public float cellSize;
         public float spacing;
+        public float simulationTickRate;
         public int minPopulationCutoff;
         public int maxPopulationThreshold;
-        public float simulationTickRate;
         public int adjanceLiveCellCountForRevival;
     }
 
@@ -62,7 +62,7 @@ public class ConwaySimulation : MonoBehaviour
 
         for (int index = 0; index < maxCount; index++)
         {
-            m_states[index] = (int)(UnityEngine.Random.Range(0, m_staticConfiguration.spawnProbability) == 0 ? 1 : 0);
+            m_states[index] = UnityEngine.Random.Range(0, m_staticConfiguration.spawnProbability) == 0 ? 1 : 0;
             m_statesCopy[index] = m_states[index];
         }
 
@@ -93,11 +93,12 @@ public class ConwaySimulation : MonoBehaviour
     {
         m_conJobHandle.Complete(); //Complete previous Job
 
-        aliveCellsCount = 0;
+        var aliveCellsCountTemp = 0;
         for (var i = 0; i < m_statesCopy.Length; i++)
         {
-            aliveCellsCount += m_statesCopy[i];
+            aliveCellsCountTemp += m_statesCopy[i];
         }
+        aliveCellsCount = aliveCellsCountTemp;
 
         var copyJob = new CopyJob
         {
