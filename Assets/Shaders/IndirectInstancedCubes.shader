@@ -3,6 +3,7 @@ Shader "Custom/IndirectInstancedCubes"
     Properties
     {
         _Color ("Color", Color) = (1,1,1,1)
+        _MainTex ("Texture", 2D) = "white" {}
     }
     SubShader
     {
@@ -20,6 +21,7 @@ Shader "Custom/IndirectInstancedCubes"
             {
                 float4 pos : SV_POSITION;
                 float4 color : COLOR0;
+                float2 uv : TEXCOORD0;
             };
 
             StructuredBuffer<int> _States;
@@ -31,6 +33,8 @@ Shader "Custom/IndirectInstancedCubes"
             int _Depth;
             float _Spacing;
             fixed4 _Color;
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
 
             v2f vert(appdata_base v, uint svInstanceID : SV_InstanceID)
             {
@@ -47,12 +51,14 @@ Shader "Custom/IndirectInstancedCubes"
                 float4 wpos = mul(_ObjectToWorld, v.vertex + float4(i * _Spacing, j * _Spacing, k * _Spacing, 0));
                 o.pos = mul(UNITY_MATRIX_VP, wpos);
                 o.color = _Color;
+                o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
                 return o;
             }
 
             float4 frag(v2f i) : SV_Target
             {
-                return i.color;
+                fixed4 texColor = tex2D(_MainTex, i.uv);
+                return i.color * texColor;
             }
             ENDCG
         }
