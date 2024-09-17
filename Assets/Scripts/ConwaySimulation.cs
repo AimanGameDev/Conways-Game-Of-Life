@@ -100,12 +100,7 @@ public class ConwaySimulation : MonoBehaviour
         }
         aliveCellsCount = aliveCellsCountTemp;
 
-        var copyJob = new CopyJob
-        {
-            states = m_states,
-            previousStates = m_statesCopy
-        };
-        copyJob.Schedule(maxCount, 64).Complete();
+        m_states.CopyTo(m_statesCopy);
 
         var conJob = new ConJob
         {
@@ -128,20 +123,6 @@ public class ConwaySimulation : MonoBehaviour
 
         m_states.Dispose();
         m_statesCopy.Dispose();
-    }
-
-    [BurstCompile]
-    public struct CopyJob : IJobParallelFor
-    {
-        [ReadOnly]
-        public NativeArray<int> states;
-
-        public NativeArray<int> previousStates;
-
-        public void Execute(int index)
-        {
-            previousStates[index] = states[index];
-        }
     }
 
     [BurstCompile]
