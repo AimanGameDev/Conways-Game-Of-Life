@@ -33,7 +33,7 @@ public class FlyCamera : MonoBehaviour
         //transform.position.Set(0,8,-32);
         //transform.rotation.Set(15,0,0,1);
         var zMax = Mathf.Max(conwaySimulation.boundsSize.x, conwaySimulation.boundsSize.y);
-        transform.position = conwaySimulation.center - new Vector3(0, 0, zMax) * 1.5f;
+        transform.position = conwaySimulation.center - new Vector3(0, 0, zMax);
         transform.LookAt(conwaySimulation.center);
     }
 
