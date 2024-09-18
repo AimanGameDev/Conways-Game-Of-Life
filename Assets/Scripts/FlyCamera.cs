@@ -21,6 +21,9 @@ public class FlyCamera : MonoBehaviour
     public bool rotateOnlyIfMousedown = true;
     public bool movementStaysFlat = true;
 
+    public float speed;
+    private Vector3 m_previousPosition;
+
     private Vector3 lastMouse = new Vector3(255, 255, 255); //kind of in the middle of the screen, rather than at the top (play)
     private float totalRun = 1.0f;
 
@@ -35,6 +38,7 @@ public class FlyCamera : MonoBehaviour
         var zMax = Mathf.Max(conwaySimulation.boundsSize.x, conwaySimulation.boundsSize.y);
         transform.position = conwaySimulation.center - new Vector3(0, 0, zMax);
         transform.LookAt(conwaySimulation.center);
+        m_previousPosition = transform.position;
     }
 
 
@@ -88,6 +92,8 @@ public class FlyCamera : MonoBehaviour
             transform.Translate(p);
         }
 
+        speed = (transform.position - m_previousPosition).magnitude / Time.deltaTime;
+        m_previousPosition = newPosition;
     }
 
     private Vector3 GetBaseInput()

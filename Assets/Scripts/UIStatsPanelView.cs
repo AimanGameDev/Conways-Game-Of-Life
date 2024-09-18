@@ -4,11 +4,13 @@ using UnityEngine;
 public class UIStatsPanelView : MonoBehaviour
 {
     public ConwaySimulation conwaySimulation;
+    public FlyCamera flyCamera;
 
     public TextMeshProUGUI fpsLabel;
     public TextMeshProUGUI maxCountLabel;
     public TextMeshProUGUI generationLabel;
     public TextMeshProUGUI aliveCellsLabel;
+    public TextMeshProUGUI cameraSpeedLabel;
 
     private float[] m_frameSamples;
     private int m_frameSampleIndex;
@@ -46,7 +48,14 @@ public class UIStatsPanelView : MonoBehaviour
             sum += m_frameSamples[i];
         }
 
-        var fpsText = $"FPS: {(int)(sum / FRAME_SAMPLE_COUNT)}";
-        fpsLabel.SetText(fpsText);
+        if (Time.frameCount % 5 == 0)
+        {
+            var fpsText = $"FPS: {(int)(sum / FRAME_SAMPLE_COUNT)}";
+            fpsLabel.SetText(fpsText);
+
+            var cameraSpeed = flyCamera.speed * 3.6f;
+            var cameraSpeedText = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Camera Speed: {0:N0} km/h", cameraSpeed);
+            cameraSpeedLabel.SetText(cameraSpeedText);
+        }
     }
 }
