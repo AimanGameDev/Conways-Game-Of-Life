@@ -11,6 +11,9 @@ public class UIStatsPanelView : MonoBehaviour
     public TextMeshProUGUI generationLabel;
     public TextMeshProUGUI aliveCellsLabel;
     public TextMeshProUGUI cameraSpeedLabel;
+    public TextMeshProUGUI cameraPosXLabel;
+    public TextMeshProUGUI cameraPosYLabel;
+    public TextMeshProUGUI cameraPosZLabel;
 
     private float[] m_frameSamples;
     private int m_frameSampleIndex;
@@ -38,6 +41,9 @@ public class UIStatsPanelView : MonoBehaviour
         maxCountLabel.SetText(maxCountText);
         generationLabel.SetText(generationText);
         aliveCellsLabel.SetText(aliveCellsText);
+        cameraPosXLabel.SetText($"X: {flyCamera.transform.position.x:N2}");
+        cameraPosYLabel.SetText($"Y: {flyCamera.transform.position.y:N2}");
+        cameraPosZLabel.SetText($"Z: {flyCamera.transform.position.z:N2}");
 
         m_frameSamples[m_frameSampleIndex] = 1f / Time.deltaTime;
         m_frameSampleIndex = (m_frameSampleIndex + 1) % FRAME_SAMPLE_COUNT;
