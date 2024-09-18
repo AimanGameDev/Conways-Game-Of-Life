@@ -32,6 +32,7 @@ Shader "Custom/IndirectInstancedCubes"
             int _Height;
             int _Depth;
             float _Spacing;
+            float _Size;
             fixed4 _Color;
             sampler2D _MainTex;
             float4 _MainTex_ST;
@@ -47,7 +48,7 @@ Shader "Custom/IndirectInstancedCubes"
                 uint j = remainder / _Width;
                 uint i = remainder % _Width;
                 uint4 state = _States[instanceID];
-                _ObjectToWorld._11_22_33 *= state;
+                _ObjectToWorld._11_22_33 *= state * _Size;
                 float4 wpos = mul(_ObjectToWorld, v.vertex + float4(i * _Spacing, j * _Spacing, k * _Spacing, 0));
                 o.pos = mul(UNITY_MATRIX_VP, wpos);
                 o.color = _Color;

@@ -20,6 +20,7 @@ public class CubeRenderer : MonoBehaviour
         public const string HEIGHT = "_Height";
         public const string DEPTH = "_Depth";
         public const string SPACING = "_Spacing";
+        public const string SIZE = "_Size";
         public const string STATES_LENGTH = "_StatesLength";
         public const string STATES = "_States";
     }
@@ -37,7 +38,6 @@ public class CubeRenderer : MonoBehaviour
         m_renderParams.matProps.SetInt(MaterialPropertiesInfo.WIDTH, conwaySimulation.width);
         m_renderParams.matProps.SetInt(MaterialPropertiesInfo.HEIGHT, conwaySimulation.height);
         m_renderParams.matProps.SetInt(MaterialPropertiesInfo.DEPTH, conwaySimulation.depth);
-        m_renderParams.matProps.SetFloat(MaterialPropertiesInfo.SPACING, conwaySimulation.cellSize + conwaySimulation.spacing * 2f);
         m_renderParams.matProps.SetInt(MaterialPropertiesInfo.STATES_LENGTH, conwaySimulation.maxCount);
         commandData[0].indexCountPerInstance = mesh.GetIndexCount(0);
         commandData[0].instanceCount = (uint)conwaySimulation.maxCount;
@@ -54,6 +54,9 @@ public class CubeRenderer : MonoBehaviour
             m_statesBuffer.SetData(conwaySimulation.states);
             m_renderParams.matProps.SetBuffer(MaterialPropertiesInfo.STATES, m_statesBuffer);
         }
+
+        m_renderParams.matProps.SetFloat(MaterialPropertiesInfo.SPACING, conwaySimulation.cellSize + conwaySimulation.spacing * 2f);
+        m_renderParams.matProps.SetFloat(MaterialPropertiesInfo.SIZE, conwaySimulation.cellSize);
 
         Graphics.RenderMeshIndirect(m_renderParams, mesh, m_commandBuf, COMMAND_COUNT);
     }

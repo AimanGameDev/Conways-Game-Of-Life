@@ -1835,65 +1835,54 @@ MonoBehaviour:
   deferredTicksToggle: {fileID: 1168836213}
   seedSettingConfiguration:
     enforcePowerOfTwo: 0
-    defaultValue: 0
     minValue: 0
     maxValue: 1000
     valueSuffix: 
   spawnProbabilitySettingConfiguration:
     enforcePowerOfTwo: 0
-    defaultValue: 16
     minValue: 0
     maxValue: 2048
     valueSuffix: 
   widthSettingConfiguration:
     enforcePowerOfTwo: 1
-    defaultValue: 64
     minValue: 1
     maxValue: 8192
     valueSuffix: 
   heightSettingConfiguration:
     enforcePowerOfTwo: 1
-    defaultValue: 64
     minValue: 1
     maxValue: 8192
     valueSuffix: 
   depthSettingConfiguration:
     enforcePowerOfTwo: 1
-    defaultValue: 64
     minValue: 1
     maxValue: 8192
     valueSuffix: 
   renderToggle: {fileID: 1709480573}
   cellSizeSettingConfiguration:
-    defaultValue: 1
-    minValue: 0.1
-    maxValue: 1
+    minValue: 0
+    maxValue: 2
     valueSuffix: 
   spacingSettingConfiguration:
-    defaultValue: 0.1
     minValue: 0
     maxValue: 2
     valueSuffix: 
   simulationTickRateSettingConfiguration:
-    defaultValue: 0.015
     minValue: 0
     maxValue: 1
     valueSuffix: s
   minPopulationCutoffSettingConfiguration:
     enforcePowerOfTwo: 0
-    defaultValue: 2
     minValue: 0
     maxValue: 26
     valueSuffix: 
   maxPopulationCutoffSettingConfiguration:
     enforcePowerOfTwo: 0
-    defaultValue: 3
     minValue: 0
     maxValue: 26
     valueSuffix: 
   birthThresholdSettingConfiguration:
     enforcePowerOfTwo: 0
-    defaultValue: 3
     minValue: 0
     maxValue: 26
     valueSuffix: 
