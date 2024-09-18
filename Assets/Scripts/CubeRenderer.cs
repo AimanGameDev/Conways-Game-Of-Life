@@ -4,7 +4,8 @@ public class CubeRenderer : MonoBehaviour
 {
     public ConwaySimulation conwaySimulation;
     public Material material;
-    public Mesh mesh;
+    public Mesh cubeMesh;
+    public Mesh quadMesh;
 
     private ComputeBuffer m_statesBuffer;
     private GraphicsBuffer m_commandBuf;
@@ -12,6 +13,7 @@ public class CubeRenderer : MonoBehaviour
     private RenderParams m_renderParams;
 
     private const int COMMAND_COUNT = 1;
+    private Mesh m_mesh;
 
     public struct MaterialPropertiesInfo
     {
@@ -27,6 +29,7 @@ public class CubeRenderer : MonoBehaviour
 
     private void Start()
     {
+        m_mesh = conwaySimulation.useQuads ? quadMesh : cubeMesh;
         m_commandBuf = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, COMMAND_COUNT, GraphicsBuffer.IndirectDrawIndexedArgs.size);
         commandData = new GraphicsBuffer.IndirectDrawIndexedArgs[COMMAND_COUNT];
         m_statesBuffer = new ComputeBuffer(conwaySimulation.maxCount, sizeof(int));
@@ -39,7 +42,7 @@ public class CubeRenderer : MonoBehaviour
         m_renderParams.matProps.SetInt(MaterialPropertiesInfo.HEIGHT, conwaySimulation.height);
         m_renderParams.matProps.SetInt(MaterialPropertiesInfo.DEPTH, conwaySimulation.depth);
         m_renderParams.matProps.SetInt(MaterialPropertiesInfo.STATES_LENGTH, conwaySimulation.maxCount);
-        commandData[0].indexCountPerInstance = mesh.GetIndexCount(0);
+        commandData[0].indexCountPerInstance = m_mesh.GetIndexCount(0);
         commandData[0].instanceCount = (uint)conwaySimulation.maxCount;
         m_commandBuf.SetData(commandData);
     }
@@ -58,7 +61,7 @@ public class CubeRenderer : MonoBehaviour
         m_renderParams.matProps.SetFloat(MaterialPropertiesInfo.SPACING, conwaySimulation.cellSize + conwaySimulation.spacing * 2f);
         m_renderParams.matProps.SetFloat(MaterialPropertiesInfo.SIZE, conwaySimulation.cellSize);
 
-        Graphics.RenderMeshIndirect(m_renderParams, mesh, m_commandBuf, COMMAND_COUNT);
+        Graphics.RenderMeshIndirect(m_renderParams, m_mesh, m_commandBuf, COMMAND_COUNT);
     }
 
     private void OnDestroy()

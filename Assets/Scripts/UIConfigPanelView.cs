@@ -41,6 +41,7 @@ public class UIConfigPanelView : MonoBehaviour
 
     [Header("Static Settings")]
     public Toggle deferredTicksToggle;
+    public Toggle useQuadsToggle;
     public IntSettingConfiguration seedSettingConfiguration;
     public IntSettingConfiguration spawnProbabilitySettingConfiguration;
     public IntSettingConfiguration widthSettingConfiguration;
@@ -90,6 +91,12 @@ public class UIConfigPanelView : MonoBehaviour
         deferredTicksToggle.onValueChanged.AddListener((value) =>
         {
             configHolder.staticConfiguration.deferredUpdate = value;
+        });
+
+        useQuadsToggle.isOn = configHolder.staticConfiguration.useQuads;
+        useQuadsToggle.onValueChanged.AddListener((value) =>
+        {
+            configHolder.staticConfiguration.useQuads = value;
         });
 
         renderToggle.isOn = configHolder.dynamicConfiguration.canRender;

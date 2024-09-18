@@ -17,6 +17,7 @@ public class ConwaySimulation : MonoBehaviour
         public int depth;
         public int sumRange;
         public bool deferredUpdate;
+        public bool useQuads;
     }
 
     [Serializable]
@@ -55,6 +56,7 @@ public class ConwaySimulation : MonoBehaviour
     public Stages stages => m_stages;
     public bool canRender => m_dynamicConfiguration.canRender;
     public bool markViewDirty => m_markViewDirty;
+    public bool useQuads => m_staticConfiguration.useQuads;
 
     private DynamicConfiguration m_dynamicConfiguration => ConwaySimulationConfigHolder.Instance.dynamicConfiguration;
     private StaticConfiguration m_staticConfiguration;

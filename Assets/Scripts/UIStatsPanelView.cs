@@ -10,8 +10,18 @@ public class UIStatsPanelView : MonoBehaviour
     public TextMeshProUGUI generationLabel;
     public TextMeshProUGUI aliveCellsLabel;
 
-    private float m_frameTime;
-    private float m_frameCaptureRate = 10;
+    private float[] m_frameSamples;
+    private int m_frameSampleIndex;
+    private const int FRAME_SAMPLE_COUNT = 16;
+
+    void Awake()
+    {
+        m_frameSamples = new float[FRAME_SAMPLE_COUNT];
+        for (int i = 0; i < FRAME_SAMPLE_COUNT; i++)
+        {
+            m_frameSamples[i] = 0;
+        }
+    }
 
     void Update()
     {
@@ -27,13 +37,16 @@ public class UIStatsPanelView : MonoBehaviour
         generationLabel.SetText(generationText);
         aliveCellsLabel.SetText(aliveCellsText);
 
-        m_frameTime += 1f / Time.deltaTime;
-        if (Time.frameCount % m_frameCaptureRate == 0)
+        m_frameSamples[m_frameSampleIndex] = 1f / Time.deltaTime;
+        m_frameSampleIndex = (m_frameSampleIndex + 1) % FRAME_SAMPLE_COUNT;
+
+        var sum = 0f;
+        for (var i = 0; i < FRAME_SAMPLE_COUNT; i++)
         {
-            var fps = m_frameTime / m_frameCaptureRate;
-            var fpsText = $"FPS: {(int)fps}";
-            fpsLabel.SetText(fpsText);
-            m_frameTime = 0;
+            sum += m_frameSamples[i];
         }
+
+        var fpsText = $"FPS: {(int)(sum / FRAME_SAMPLE_COUNT)}";
+        fpsLabel.SetText(fpsText);
     }
 }
