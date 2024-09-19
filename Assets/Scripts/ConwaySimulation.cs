@@ -309,37 +309,38 @@ public class ConwaySimulation : MonoBehaviour
             int width = cellWidth;
             int height = cellHeight;
             int depth = cellDepth;
-            int validAndAliveAdjacentIndicesCount = 0;
             int k = index / (width * height);
             int remainder = index % (width * height);
             int j = remainder / width;
             int i = remainder % width;
+            int validAndAliveAdjacentIndicesCount = 0;
 
             for (int dx = -1; dx <= 1; dx++)
             {
+                int vadx = 0;
                 for (int dy = -1; dy <= 1; dy++)
                 {
+                    int vady = 0;
                     for (int dz = -1; dz <= 1; dz++)
                     {
-                        if (dx == 0 && dy == 0 && dz == 0)
-                            continue;
-
                         int iA = i + dx;
                         int jA = j + dy;
                         int kA = k + dz;
-                        var isValidCoordinate = iA >= 0 && iA < width && jA >= 0 && jA < height && kA >= 0 && kA < depth;
-                        if (!isValidCoordinate)
-                            continue;
-
+                        int isCenter = math.select(0, 1, dx == 0 & dy == 0 & dz == 0);
+                        int isValidCoordinate = math.select(0, 1, iA >= 0 & iA < width & jA >= 0 & jA < height & kA >= 0 & kA < depth);
                         int adjacentIndex = iA + jA * width + kA * width * height;
-                        validAndAliveAdjacentIndicesCount += statesCopy[adjacentIndex];
+                        int isValidIndex = (1 - isCenter) * isValidCoordinate;
+                        int indexToAccess = math.select(index, adjacentIndex, 1 == isValidIndex);
+                        vady += isValidIndex * statesCopy[indexToAccess];
                     }
+                    vadx += vady;
                 }
+                validAndAliveAdjacentIndicesCount += vadx;
             }
 
             var currentStateValue = states[index];
             var canReproduce = math.select(0, 1, validAndAliveAdjacentIndicesCount == reproductionStateCount);
-            var isWithinPopulationRange = math.select(0, 1, validAndAliveAdjacentIndicesCount >= minPopulationCutoff && validAndAliveAdjacentIndicesCount <= maxPopulationThreshold);
+            var isWithinPopulationRange = math.select(0, 1, validAndAliveAdjacentIndicesCount >= minPopulationCutoff & validAndAliveAdjacentIndicesCount <= maxPopulationThreshold);
             var canLive = (1 - currentStateValue) * canReproduce + currentStateValue * isWithinPopulationRange;
             states[index] = canLive;
         }
