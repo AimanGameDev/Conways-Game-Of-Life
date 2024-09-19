@@ -185,9 +185,9 @@ public class ConwaySimulation : MonoBehaviour
     {
         var conJob = new ConJob
         {
-            width = m_staticConfiguration.width,
-            height = m_staticConfiguration.height,
-            depth = m_staticConfiguration.depth,
+            cellWidth = m_staticConfiguration.width,
+            cellHeight = m_staticConfiguration.height,
+            cellDepth = m_staticConfiguration.depth,
             minPopulationCutoff = m_dynamicConfiguration.minPopulationCutoff,
             maxPopulationThreshold = m_dynamicConfiguration.maxPopulationThreshold,
             states = m_states,
@@ -276,7 +276,8 @@ public class ConwaySimulation : MonoBehaviour
         public void Execute(int index)
         {
             int sum = 0;
-            for (int i = 0; i < states.Length; i++)
+            var length = states.Length;
+            for (int i = 0; i < length; i++)
             {
                 sum += states[i];
             }
@@ -288,11 +289,11 @@ public class ConwaySimulation : MonoBehaviour
     public struct ConJob : IJobParallelFor
     {
         [ReadOnly]
-        public int width;
+        public int cellWidth;
         [ReadOnly]
-        public int height;
+        public int cellHeight;
         [ReadOnly]
-        public int depth;
+        public int cellDepth;
         [ReadOnly]
         public int minPopulationCutoff;
         [ReadOnly]
@@ -305,6 +306,9 @@ public class ConwaySimulation : MonoBehaviour
 
         public void Execute(int index)
         {
+            int width = cellWidth;
+            int height = cellHeight;
+            int depth = cellDepth;
             int validAndAliveAdjacentIndicesCount = 0;
             int k = index / (width * height);
             int remainder = index % (width * height);
@@ -328,22 +332,16 @@ public class ConwaySimulation : MonoBehaviour
                             continue;
 
                         int adjacentIndex = iA + jA * width + kA * width * height;
-                        int adjacentState = statesCopy[adjacentIndex];
-                        if (adjacentState == 1)
-                        {
-                            validAndAliveAdjacentIndicesCount++;
-                        }
+                        validAndAliveAdjacentIndicesCount += statesCopy[adjacentIndex];
                     }
                 }
             }
 
-            var canSpawn = validAndAliveAdjacentIndicesCount == reproductionStateCount;
-            var canDie = validAndAliveAdjacentIndicesCount < minPopulationCutoff || validAndAliveAdjacentIndicesCount > maxPopulationThreshold;
-
             var currentStateValue = states[index];
-            var isCurrentlyAlive = currentStateValue == 1;
-            var canLive = (!isCurrentlyAlive && canSpawn) || (isCurrentlyAlive && !canDie);
-            states[index] = math.select(0, 1, canLive);
+            var canReproduce = math.select(0, 1, validAndAliveAdjacentIndicesCount == reproductionStateCount);
+            var isWithinPopulationRange = math.select(0, 1, validAndAliveAdjacentIndicesCount >= minPopulationCutoff && validAndAliveAdjacentIndicesCount <= maxPopulationThreshold);
+            var canLive = (1 - currentStateValue) * canReproduce + currentStateValue * isWithinPopulationRange;
+            states[index] = canLive;
         }
     }
 }
