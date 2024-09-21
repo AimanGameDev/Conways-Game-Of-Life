@@ -1,10 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 using Unity.Burst;
 using Unity.Jobs;
-using Unity.Collections;
 
 public class ConwayAliveCellParallelCounter : IConwayAliveCellCounter
 {
@@ -19,7 +17,6 @@ public class ConwayAliveCellParallelCounter : IConwayAliveCellCounter
     private List<SumBinaryTree> m_leafNodes;
     private List<SumBinaryTree> m_allNodes;
     private NativeArray<JobHandle> m_sumJobs;
-    private int m_sumJobsIndex;
     private Stack<SumBinaryTree> m_sumOperationNodeOrderStack;
     private Queue<SumBinaryTree> m_sumOperationsQueue;
 
@@ -94,28 +91,23 @@ public class ConwayAliveCellParallelCounter : IConwayAliveCellCounter
         for (var i = 0; i < m_leafNodes.Count; i++)
         {
             var leafNode = m_leafNodes[i];
-            leafNode.values.CopyFrom(states.GetSubArray(i * m_range, m_range));
+            var subArray = states.GetSubArray(i * m_range, m_range);
+            leafNode.values.CopyFrom(subArray);
             m_sumOperationNodeOrderStack.Push(leafNode);
         }
 
-        m_sumJobsIndex = 0;
-
+        var sumJobsStartIndex = 0;
         while (m_sumOperationsQueue.Count != 1)
         {
-            ScheduleAndComplete();
+            ScheduleAndComplete(in sumJobsStartIndex, out var jobsCount);
+            sumJobsStartIndex += jobsCount;
         }
-
-        var rootSumJob = new ParallelSumJob
-        {
-            left = m_root.left.values,
-            right = m_root.right.values,
-            result = m_root.values,
-        };
-        rootSumJob.Schedule(m_range, 64).Complete();
     }
 
-    private void ScheduleAndComplete()
+    private void ScheduleAndComplete(in int sumJobsStartIndex, out int jobsCount)
     {
+        jobsCount = 0;
+
         while (m_sumOperationsQueue.Count > 0)
         {
             var node = m_sumOperationsQueue.Dequeue();
@@ -127,21 +119,24 @@ public class ConwayAliveCellParallelCounter : IConwayAliveCellCounter
             var left = m_sumOperationNodeOrderStack.Pop();
             var right = m_sumOperationNodeOrderStack.Pop();
 
-            var jobHandle = new ParallelSumJob
+            var parallelSumJob = new ParallelSumJob
             {
                 left = left.values,
                 right = right.values,
                 result = left.parent.values,
-            }.Schedule(m_range, 64);
+            };
+            m_sumJobs[sumJobsStartIndex] = parallelSumJob.Schedule(m_range, 64);
+            m_sumJobs[sumJobsStartIndex].Complete();
 
-            jobHandle.Complete();
-
+            jobsCount++;
             m_sumOperationsQueue.Enqueue(left.parent);
         }
     }
 
     public void CompleteJob(out int aliveCellsCount)
     {
+        JobHandle.CompleteAll(m_sumJobs);
+
         var aliveCellsCountTemp = 0;
         var values = m_root.values;
         for (var i = 0; i < values.Length; i++)
