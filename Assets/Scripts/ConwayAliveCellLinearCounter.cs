@@ -24,6 +24,8 @@ public class ConwayAliveCellLinearCounter : IConwayAliveCellCounter
 
     public void ScheduleJob(NativeArray<int> states)
     {
+        UnityEngine.Debug.Log("Linear :: ScheduleJob");
+
         var sumsCount = m_sums.Length;
         for (var i = 0; i < sumsCount; i++)
         {
@@ -37,7 +39,7 @@ public class ConwayAliveCellLinearCounter : IConwayAliveCellCounter
         }
     }
 
-    public void CompleteJob(out int sum)
+    public void CompleteJob(out int aliveCellsCount)
     {
         JobHandle.CompleteAll(m_sumJobs);
 
@@ -46,7 +48,7 @@ public class ConwayAliveCellLinearCounter : IConwayAliveCellCounter
         {
             aliveCellsCountTemp += m_sums[i][0];
         }
-        sum = aliveCellsCountTemp;
+        aliveCellsCount = aliveCellsCountTemp;
     }
 
     public void Dispose()
