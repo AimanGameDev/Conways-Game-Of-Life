@@ -19,6 +19,7 @@ public class UIConfigPanelView : MonoBehaviour
         public bool enforcePowerOfTwo;
         public int minValue;
         public int maxValue;
+        public string valuePrefix;
         public string valueSuffix;
     }
 
@@ -27,6 +28,7 @@ public class UIConfigPanelView : MonoBehaviour
     {
         public float minValue;
         public float maxValue;
+        public string valuePrefix;
         public string valueSuffix;
     }
 
@@ -177,10 +179,10 @@ public class UIConfigPanelView : MonoBehaviour
         setting.slider.maxValue = configuration.maxValue;
         setting.slider.wholeNumbers = false;
         setting.slider.SetValueWithoutNotify(defaultValue);
-        setting.value.SetText($"{defaultValue:N3} {configuration.valueSuffix}");
+        setting.value.SetText($"{configuration.valuePrefix}{defaultValue:N3}{configuration.valueSuffix}");
         setting.slider.onValueChanged.AddListener((value) =>
         {
-            setting.value.SetText($"{value:N3} {configuration.valueSuffix}");
+            setting.value.SetText($"{configuration.valuePrefix}{value:N3}{configuration.valueSuffix}");
             ApplyConfigs();
         });
     }
@@ -199,11 +201,11 @@ public class UIConfigPanelView : MonoBehaviour
         setting.slider.wholeNumbers = true;
         setting.slider.SetValueWithoutNotify(defaultValue);
         var valueText = configuration.enforcePowerOfTwo ? Mathf.Pow(2, defaultValue) : defaultValue;
-        setting.value.SetText($"{valueText:N0} {configuration.valueSuffix}");
+        setting.value.SetText($"{configuration.valuePrefix}{valueText:N0}{configuration.valueSuffix}");
         setting.slider.onValueChanged.AddListener((value) =>
         {
             var valueText = configuration.enforcePowerOfTwo ? Mathf.Pow(2, value) : value;
-            setting.value.SetText($"{valueText:N0} {configuration.valueSuffix}");
+            setting.value.SetText($"{configuration.valuePrefix}{valueText:N0}{configuration.valueSuffix}");
             ApplyConfigs();
         });
     }

@@ -1973,54 +1973,65 @@ MonoBehaviour:
     enforcePowerOfTwo: 0
     minValue: 0
     maxValue: 1000
+    valuePrefix: 
     valueSuffix: 
   spawnProbabilitySettingConfiguration:
     enforcePowerOfTwo: 0
     minValue: 0
     maxValue: 2048
+    valuePrefix: '1 in '
     valueSuffix: 
   widthSettingConfiguration:
     enforcePowerOfTwo: 1
     minValue: 1
     maxValue: 8192
-    valueSuffix: 
+    valuePrefix: 
+    valueSuffix: ' m'
   heightSettingConfiguration:
     enforcePowerOfTwo: 1
     minValue: 1
     maxValue: 8192
-    valueSuffix: 
+    valuePrefix: 
+    valueSuffix: ' m'
   depthSettingConfiguration:
     enforcePowerOfTwo: 1
     minValue: 1
     maxValue: 8192
-    valueSuffix: 
+    valuePrefix: 
+    valueSuffix: ' m'
   renderToggle: {fileID: 1709480573}
   cellSizeSettingConfiguration:
     minValue: 0
     maxValue: 2
-    valueSuffix: 
+    valuePrefix: 
+    valueSuffix: ' m'
   spacingSettingConfiguration:
     minValue: 0
     maxValue: 2
-    valueSuffix: 
+    valuePrefix: 
+    valueSuffix: ' m'
   simulationTickRateSettingConfiguration:
     minValue: 0
     maxValue: 1
-    valueSuffix: s
+    valuePrefix: 
+    valueSuffix: ' s'
   minPopulationCutoffSettingConfiguration:
     enforcePowerOfTwo: 0
     minValue: 0
     maxValue: 26
+    valuePrefix: 
     valueSuffix: 
   maxPopulationCutoffSettingConfiguration:
     enforcePowerOfTwo: 0
     minValue: 0
     maxValue: 26
+    valuePrefix: 
     valueSuffix: 
   birthThresholdSettingConfiguration:
     enforcePowerOfTwo: 0
     minValue: 0
     maxValue: 26
+    valuePrefix: 
     valueSuffix: 
   seedSetting: {fileID: 1539053239}
   spawnProbabilitySetting: {fileID: 100717241}
@@ -4814,7 +4825,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 40, y: -40}
-  m_SizeDelta: {x: 475.7008, y: 771.2}
+  m_SizeDelta: {x: 495, y: 771.2}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1621339835
 MonoBehaviour:
