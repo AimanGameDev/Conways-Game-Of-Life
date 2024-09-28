@@ -4,7 +4,7 @@ using UnityEngine;
 using Unity.Burst;
 using Unity.Jobs;
 
-public class ConwayAliveCellParallelCounter : IConwayAliveCellCounter
+public class ConwayAliveCellParallelBinaryTreeCounter : IConwayAliveCellCounter
 {
     public class SumBinaryTree
     {
@@ -23,7 +23,7 @@ public class ConwayAliveCellParallelCounter : IConwayAliveCellCounter
     private SumBinaryTree m_root;
     private int m_range;
 
-    public ConwayAliveCellParallelCounter(int maxCount, int range)
+    public ConwayAliveCellParallelBinaryTreeCounter(int maxCount, int range)
     {
         m_range = range;
 
@@ -84,8 +84,6 @@ public class ConwayAliveCellParallelCounter : IConwayAliveCellCounter
 
     public void ScheduleJob(NativeArray<int> states)
     {
-        Debug.Log("Parallel :: ScheduleJob");
-
         m_sumOperationsQueue.Clear();
         m_sumOperationNodeOrderStack.Clear();
         for (var i = 0; i < m_leafNodes.Count; i++)

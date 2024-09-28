@@ -2,13 +2,13 @@ using Unity.Burst;
 using Unity.Jobs;
 using Unity.Collections;
 
-public class ConwayAliveCellLinearCounter : IConwayAliveCellCounter
+public class ConwayAliveCellParallelDividedLinearCounter : IConwayAliveCellCounter
 {
     private NativeArray<int>[] m_sums;
     private NativeArray<JobHandle> m_sumJobs;
     private int m_range;
 
-    public ConwayAliveCellLinearCounter(int maxCount, int range)
+    public ConwayAliveCellParallelDividedLinearCounter(int maxCount, int range)
     {
         var sumJobCount = maxCount / range;
         sumJobCount = sumJobCount <= 0 ? 1 : sumJobCount;
@@ -24,8 +24,6 @@ public class ConwayAliveCellLinearCounter : IConwayAliveCellCounter
 
     public void ScheduleJob(NativeArray<int> states)
     {
-        UnityEngine.Debug.Log("Linear :: ScheduleJob");
-
         var sumsCount = m_sums.Length;
         for (var i = 0; i < sumsCount; i++)
         {

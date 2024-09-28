@@ -90,7 +90,7 @@ public class ConwaySimulation : MonoBehaviour
         }
 
         m_staticConfiguration.sumRange = maxCount / 256;
-        m_aliveCellCounter = new ConwayAliveCellLinearCounter(maxCount, m_staticConfiguration.sumRange);
+        m_aliveCellCounter = new ConwayAliveCellParallelDividedLinearCounter(maxCount, m_staticConfiguration.sumRange);
 
         UpdateBounds();
 
