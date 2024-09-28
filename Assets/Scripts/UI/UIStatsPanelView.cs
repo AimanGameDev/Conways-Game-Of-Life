@@ -15,17 +15,14 @@ public class UIStatsPanelView : MonoBehaviour
     public TextMeshProUGUI cameraPosYLabel;
     public TextMeshProUGUI cameraPosZLabel;
 
-    private float[] m_frameSamples;
-    private int m_frameSampleIndex;
-    private const int FRAME_SAMPLE_COUNT = 16;
+    private int m_fpsAccumulator;
+    private float m_fpsNextCapturePeriod;
+    private const float FPS_MEASURE_PERIOD = 0.5f;
 
     void Awake()
     {
-        m_frameSamples = new float[FRAME_SAMPLE_COUNT];
-        for (int i = 0; i < FRAME_SAMPLE_COUNT; i++)
-        {
-            m_frameSamples[i] = 0;
-        }
+        m_fpsAccumulator = 0;
+        m_fpsNextCapturePeriod = Time.realtimeSinceStartup + FPS_MEASURE_PERIOD;
     }
 
     void Update()
@@ -45,20 +42,17 @@ public class UIStatsPanelView : MonoBehaviour
         cameraPosYLabel.SetText($"Y: {flyCamera.transform.position.y:N2}");
         cameraPosZLabel.SetText($"Z: {flyCamera.transform.position.z:N2}");
 
-        m_frameSamples[m_frameSampleIndex] = 1f / Time.deltaTime;
-        m_frameSampleIndex = (m_frameSampleIndex + 1) % FRAME_SAMPLE_COUNT;
-
-        var sum = 0f;
-        for (var i = 0; i < FRAME_SAMPLE_COUNT; i++)
+        m_fpsAccumulator++;
+        if (Time.realtimeSinceStartup > m_fpsNextCapturePeriod)
         {
-            sum += m_frameSamples[i];
+            var fps = (int)(m_fpsAccumulator / FPS_MEASURE_PERIOD);
+            fpsLabel.SetText($"FPS: {fps}");
+            m_fpsAccumulator = 0;
+            m_fpsNextCapturePeriod += FPS_MEASURE_PERIOD;
         }
 
         if (Time.frameCount % 5 == 0)
         {
-            var fpsText = $"FPS: {(int)(sum / FRAME_SAMPLE_COUNT)}";
-            fpsLabel.SetText(fpsText);
-
             var cameraSpeed = flyCamera.speed * 3.6f; // 3.6f to convert m/s to km/h
             var cameraSpeedText = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Camera Speed: {0:N0} km/h", cameraSpeed);
             cameraSpeedLabel.SetText(cameraSpeedText);
