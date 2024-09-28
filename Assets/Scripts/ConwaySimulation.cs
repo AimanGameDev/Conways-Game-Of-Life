@@ -66,7 +66,6 @@ public class ConwaySimulation : MonoBehaviour
     private JobHandle m_conJobHandle;
     private JobHandle m_copyJobHandle;
     private IConwayAliveCellCounter m_aliveCellCounter;
-    private IConwayAliveCellCounter m_aliveCellCounter1;
     private float m_simulationTime;
     private Stages m_stages;
     private bool m_markViewDirty;
@@ -92,7 +91,6 @@ public class ConwaySimulation : MonoBehaviour
 
         m_staticConfiguration.sumRange = maxCount / 256;
         m_aliveCellCounter = new ConwayAliveCellLinearCounter(maxCount, m_staticConfiguration.sumRange);
-        m_aliveCellCounter1 = new ConwayAliveCellParallelCounter(maxCount, m_staticConfiguration.sumRange);
 
         UpdateBounds();
 
@@ -208,20 +206,11 @@ public class ConwaySimulation : MonoBehaviour
     private void ScheduleSumJob()
     {
         m_aliveCellCounter.ScheduleJob(m_statesCopy);
-        m_aliveCellCounter1.ScheduleJob(m_statesCopy);
     }
 
     private void CompleteSumJob()
     {
         m_aliveCellCounter.CompleteJob(out var aliveCellsCountTemp);
-
-        m_aliveCellCounter1.CompleteJob(out var aliveCellsCountTemp1);
-
-        if (aliveCellsCountTemp != aliveCellsCountTemp1)
-        {
-            Debug.LogError("Alive cells count mismatch");
-        }
-
         aliveCellsCount = aliveCellsCountTemp;
     }
 
@@ -231,7 +220,6 @@ public class ConwaySimulation : MonoBehaviour
         m_copyJobHandle.Complete();
 
         m_aliveCellCounter.Dispose();
-        m_aliveCellCounter1.Dispose();
 
         m_states.Dispose();
         m_statesCopy.Dispose();
