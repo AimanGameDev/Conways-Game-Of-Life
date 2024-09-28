@@ -59,7 +59,7 @@ public class UIStatsPanelView : MonoBehaviour
             var fpsText = $"FPS: {(int)(sum / FRAME_SAMPLE_COUNT)}";
             fpsLabel.SetText(fpsText);
 
-            var cameraSpeed = flyCamera.speed * 3.6f;
+            var cameraSpeed = flyCamera.speed * 3.6f; // 3.6f to convert m/s to km/h
             var cameraSpeedText = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Camera Speed: {0:N0} km/h", cameraSpeed);
             cameraSpeedLabel.SetText(cameraSpeedText);
         }
