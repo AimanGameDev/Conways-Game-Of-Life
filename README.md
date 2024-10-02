@@ -1,19 +1,20 @@
 # Conway's Game of Life - High Performance Simulation in Unity
 
-This is a high-performance simulation of Conway's Game of Life built using the Unity engine. The main objective was to create a version capable of handling millions of cells at a good frame rate. To achieve this, I utilized Unity's Jobs and Burst frameworks for parallel computation, as well as the Graphics.RenderMeshIndirect API for efficient rendering.
+This is a high-performance simulation of Conway's Game of Life built using the Unity engine. The main objective was to create a version capable of handling millions of cells at a good frame rate. To achieve this, I utilized Unity's Jobs and Burst frameworks for parallel computation, as well as the `Graphics.RenderMeshIndirect` API for efficient rendering.
 
 ### Hardware Used
 
 This is my hardware specs :
 
-Type: Laptop
-Processor: AMD Ryzen™ 9 5900HX with Radeon Graphics
-Cores: 8
-L1 Cache: 512 KB
-L2 Cache: 4 MB
-L3 Cache: 16 MB
+- Type: Laptop
+- CPU: AMD Ryzen™ 9 5900HX with Radeon Graphics
+- Cores: 8
+- L1 Cache: 512 KB
+- L2 Cache: 4 MB
+- L3 Cache: 16 MB
+- Dedicated GPU: **NONE!**
 
-The simulation is GPU-bottlenecked during rendering. Here's a performance breakdown :
+The simulation is GPU-bottlenecked during rendering since there is not dedicated GPU. Here's a performance breakdown :
 - Without rendering, the simulation handles up to 67 million cells at 30 FPS.
 - When rendering with quads, it handles up to 16 million cells at 30 FPS.
 - When rendering with cubes, it handles up to 2 million cells at 30 FPS.
