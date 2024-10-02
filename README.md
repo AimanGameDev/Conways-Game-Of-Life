@@ -17,7 +17,7 @@ This is a high-performance massive simulation of Conway's Game of Life built usi
 Results with Dedicated GPU :
 Passing data from CPU to GPU is the main bottleneck here. This can be avoided by using `Compute Shaders`! Gonna do this one in the future!
 
-Here's the performance breakdown :
+Here's the performance stats breakdown :
 - Without rendering, the simulation handles up to 67 million cells at 30 FPS.
 - When rendering with quads, it handles up to 33 million cells at 30 FPS.
 - When rendering with cubes, it handles up to 4 million cells at 30 FPS.
@@ -25,7 +25,7 @@ Here's the performance breakdown :
 Results with Integrated GPU :
 The simulation is GPU-bottlenecked during rendering since it's NOT using the dedicated GPU.
 
-Here's the performance breakdown :
+Here's the performance stats breakdown :
 - Without rendering, the simulation handles up to 67 million cells at 30 FPS.
 - When rendering with quads, it handles up to 16 million cells at 30 FPS.
 - When rendering with cubes, it handles up to 2 million cells at 30 FPS.
