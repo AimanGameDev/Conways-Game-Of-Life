@@ -26,7 +26,7 @@ The simulation is GPU-bottlenecked during rendering since it's NOT using the ded
 
 ## Preview
 
-Build Link: https://drive.google.com/file/d/12VT9OIP2UZEpqWAuwq5kxACuaCH6nrjQ/view?usp=drive_link
+Build Link (Windows): https://drive.google.com/file/d/12VT9OIP2UZEpqWAuwq5kxACuaCH6nrjQ/view?usp=drive_link
 
 Video Montage : [Youtube](https://www.youtube.com/watch?v=uacI5GSx63Y)
 
