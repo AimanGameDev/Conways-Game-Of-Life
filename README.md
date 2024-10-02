@@ -1,5 +1,7 @@
 # Conway's Game of Life - Massive Simulation in Unity
 
+[Whats Conway's Game Of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life)?
+
 This is a high-performance massive simulation of Conway's Game of Life built using Unity Engine. The main objective was to create a version capable of handling millions of cells at a good frame rate and supporting dynamic configuration changes to the simulation. To achieve this, I utilized Unity's Jobs and Burst frameworks for parallel computation and `Graphics.RenderMeshIndirect` API for efficient rendering.
 
 ### Hardware Specs
