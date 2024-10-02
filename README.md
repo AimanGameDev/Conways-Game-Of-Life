@@ -1,10 +1,8 @@
-# Conway's Game of Life - High Performance Simulation in Unity
+# Conway's Game of Life - Massive Simulation in Unity
 
-This is a high-performance simulation of Conway's Game of Life built using the Unity engine. The main objective was to create a version capable of handling millions of cells at a good frame rate. To achieve this, I utilized Unity's Jobs and Burst frameworks for parallel computation, as well as the `Graphics.RenderMeshIndirect` API for efficient rendering.
+This is a high-performance massive simulation of Conway's Game of Life built using Unity engine. The main objective was to create a version capable of handling millions of cells at a good frame rate. To achieve this, I utilized Unity's Jobs and Burst frameworks for parallel computation and `Graphics.RenderMeshIndirect` API for efficient rendering.
 
-### Hardware Used
-
-This is my hardware specs :
+### Hardware Specs
 
 - Type: Laptop
 - CPU: AMD Ryzen™ 9 5900HX with Radeon Graphics
@@ -12,29 +10,33 @@ This is my hardware specs :
 - L1 Cache: 512 KB
 - L2 Cache: 4 MB
 - L3 Cache: 16 MB
-- Dedicated GPU: **NONE!**
+- Dedicated GPU: Nvidia GeForce RTX 3060 Laptop GPU
 
-The simulation is GPU-bottlenecked during rendering since there is not dedicated GPU. Here's a performance breakdown :
+Results with Dedicated GPU :
+Passing data from CPU to GPU is the main bottleneck here. This can be avoided by using Compute Shaders!
+- Without rendering, the simulation handles up to 67 million cells at 30 FPS.
+- When rendering with quads, it handles up to 33 million cells at 30 FPS.
+- When rendering with cubes, it handles up to 4 million cells at 30 FPS.
+
+Results with Integrated GPU :
+The simulation is GPU-bottlenecked during rendering since it's NOT using the dedicated GPU. Here's a performance breakdown :
 - Without rendering, the simulation handles up to 67 million cells at 30 FPS.
 - When rendering with quads, it handles up to 16 million cells at 30 FPS.
 - When rendering with cubes, it handles up to 2 million cells at 30 FPS.
 
-So, my plan of moving the computation to compute shaders won't work.
-
 ## Preview
 
-Build Link : https://drive.google.com/file/d/12VT9OIP2UZEpqWAuwq5kxACuaCH6nrjQ/view?usp=drive_link
+Build Link: https://drive.google.com/file/d/12VT9OIP2UZEpqWAuwq5kxACuaCH6nrjQ/view?usp=drive_link
 
-Video Montage : [Youtube](https://youtu.be/6linvymvMDA)
+Video Montage : [Youtube](https://www.youtube.com/watch?v=uacI5GSx63Y)
 
-Default : 
-![COG_Default](https://github.com/user-attachments/assets/3bb64a11-cd61-4a45-b95a-356968f720e7)
+![Screenshot_2](https://github.com/user-attachments/assets/d42cbc84-d8eb-473e-a7b9-fc651652a97e)
 
-33 Million Cells : 
-![COG_33Million](https://github.com/user-attachments/assets/3587c6b5-baab-4c0c-b14f-093d21b60d6d)
-
-Close up :
-![COG_CloseShot](https://github.com/user-attachments/assets/0692fb21-ef4d-4359-924f-743eaef710a5)
+16 Million at 60 FPS : 
+![Screenshot_1](https://github.com/user-attachments/assets/2b94d708-d64d-4b2a-be16-a70b6b9680fe)
 
 3D Grid :
-![COG_Cube](https://github.com/user-attachments/assets/390ee1bd-6ebb-4d0d-95bb-1798be47fb02)
+![Screenshot_3](https://github.com/user-attachments/assets/f1c532e0-6b9e-4f91-b168-c22530cd9e4f)
+
+Inside :
+![Screenshot_4](https://github.com/user-attachments/assets/b56b3f1d-70bb-47e0-b051-6c03ca4f5c25)
